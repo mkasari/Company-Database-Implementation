@@ -1,0 +1,1336 @@
+DROP TABLE skill;
+DROP TABLE training;
+DROP TABLE department;
+DROP TABLE employee;
+DROP TABLE client;
+DROP TABLE project;
+DROP TABLE assignment;
+
+
+CREATE TABLE skill
+(Code NUMBER(3), 
+Name VARCHAR(30),
+Category VARCHAR(20),
+CONSTRAINT code_pk PRIMARY KEY (Code)
+);
+
+CREATE TABLE department
+(Dept_Code NUMBER(3) PRIMARY KEY, 
+Name VARCHAR(20),
+Location VARCHAR(20),
+Phone NUMBER(10)CONSTRAINT department_phone_cc CHECK(Phone>999999999),
+Manager_ID NUMBER(3));
+
+CREATE TABLE employee
+(Emp_Num NUMBER(3) PRIMARY KEY,
+LName VARCHAR(20),
+FName VARCHAR(20),
+DOB DATE ,
+Hire_Date DATE DEFAULT SYSDATE ,
+Super_ID NUMBER(3),
+Dept_Code NUMBER(3),
+CONSTRAINT employee_dob_cc CHECK (DOB<Hire_Date),
+CONSTRAINT employee_Super_ID_FK FOREIGN KEY (Super_ID) REFERENCES employee(Emp_Num),
+CONSTRAINT employee_Dept_Code_FK FOREIGN KEY (Dept_Code) REFERENCES department(Dept_Code)
+);
+
+ALTER TABLE department
+CONSTRAINT department_Mang_ID_FK FOREIGN KEY (Manager_ID) REFERENCES employee(Emp_Num);
+
+
+
+CREATE TABLE training
+(Train_Num NUMBER(3) PRIMARY KEY,
+Code NUMBER(3), 
+Emp_Num NUMBER(3),
+Name VARCHAR(20),
+Date_Acquired DATE ,
+Comments VARCHAR(50),
+CONSTRAINT training_dt_aq_cc CHECK (
+Date_Acquired>TO_DATE('1989-12-09','YYYY-MM-DD')),
+CONSTRAINT training_Code_FK FOREIGN KEY (Code) REFERENCES skill(Code),
+CONSTRAINT employee_Emp_Num_FK FOREIGN KEY (Emp_Num) REFERENCES employee(Emp_Num)
+);
+
+
+
+CREATE TABLE client
+(Client_ID NUMBER(3) PRIMARY KEY,
+Name VARCHAR(30),
+Street VARCHAR(30),
+City VARCHAR(20),
+State VARCHAR(20),
+Zip_Code NUMBER(5)CONSTRAINT client_zip_cc CHECK(Zip_Code>9999),
+Industry VARCHAR(20),
+Web_Address VARCHAR(30),
+Phone NUMBER(10)CONSTRAINT client_phone_cc CHECK(Phone>999999999),
+Contact_LName VARCHAR(20),
+Contact_FName VARCHAR(20)
+);
+
+
+
+
+CREATE TABLE project
+(Proj_Number NUMBER(3) PRIMARY KEY,
+Name VARCHAR(20)CONSTRAINT project_name_cc CHECK(Name NOT LIKE '%[^A-Z]%'),
+Start_Date DATE DEFAULT SYSDATE,
+Total_Cost NUMBER(5)CONSTRAINT project_tol_cost_cc CHECK(Total_Cost>0),
+Dept_Code NUMBER(3),
+Client_ID NUMBER(3),
+Code NUMBER(3),
+CONSTRAINT project_Dept_Code_FK FOREIGN KEY (Dept_Code) REFERENCES department(Dept_Code),
+CONSTRAINT project_Client_ID_FK FOREIGN KEY (Client_ID) REFERENCES client(Client_ID),
+CONSTRAINT project_Code_FK FOREIGN KEY (Code) REFERENCES skill(Code)
+);
+
+
+CREATE TABLE assignment
+(Assign_Num NUMBER(3) PRIMARY KEY,
+Proj_Number NUMBER(3),
+Emp_Num NUMBER(3),
+Date_Assigned DATE DEFAULT SYSDATE,
+Date_Ended DATE,
+Hours_Used Number(3), 
+CONSTRAINT date_ended_cc CHECK(Date_ended > Date_assigned),
+CONSTRAINT hours_used_cc CHECK(Hours_Used >0),
+CONSTRAINT assignment_Proj_Num_FK FOREIGN KEY (Proj_Number) REFERENCES project(Proj_Number),
+CONSTRAINT assignment_Emp_Num_FK FOREIGN KEY (Emp_Num) REFERENCES employee(Emp_Num)
+);
+
+
+
+
+
+INSERT INTO skill
+VALUES (200, 'Excel', 'Technology');
+
+INSERT INTO skill
+VALUES (201, 'Time Management', 'Interpersonal');
+
+INSERT INTO skill
+VALUES (202, 'Strategy', 'Business');
+ 
+INSERT INTO skill 
+VALUES (203, 'Data Collection', 'Technology');
+
+INSERT INTO skill
+VALUES (204, 'Hypotheses Trees', 'Technology');
+
+INSERT INTO skill
+VALUES (205, 'Research Methods', 'Technology');
+
+INSERT INTO skill
+VALUES (206, 'Resistance', 'Interpersonal');
+
+INSERT INTO skill
+VALUES (207, 'Presentation', 'Business');
+
+INSERT INTO department 
+VALUES (400, 'Administration', 'Pittsburgh, PA', 4127942324, 107);
+
+INSERT INTO department
+VALUES (401, 'Finance', 'Pittsburgh, PA', 4124200724, 104);
+
+INSERT INTO department 
+VALUES (402, 'Sales', 'Pittsburgh, PA', 4129024007, 109);
+
+INSERT INTO department
+VALUES (403, 'Technology', 'Pittsburgh, PA', 4121248142, 103);
+
+INSERT INTO department
+VALUES (404, 'Customer Service', 'Pittsburgh, PA', 4122468244, 100);
+
+INSERT INTO department
+VALUES (405, 'Operations', 'Pittsburgh, PA', 4123974241, 101);
+
+INSERT INTO employee
+VALUES (107, 'Kand', 'Nina', '30-NOV-71', '30-JAN-17', NULL, 400);
+
+INSERT INTO employee
+VALUES (100, 'Patel', 'Shivani','26-JAN-98', '30-JUN-20', 107, 404);
+
+INSERT INTO employee
+VALUES (101, 'Basquez', 'Joseph', '24-MAR-96', '27-JAN-20', 107, 405);
+
+INSERT INTO employee
+VALUES (103, 'Sung', 'Esther', '21-FEB-96','17-APR-20', 107, 403);
+
+INSERT INTO employee
+VALUES (104, 'Gadiraju', 'Gautham', '01-NOV-84',  '12-AUG-17', 107, 401);
+
+INSERT INTO employee
+VALUES (105, 'Hagler', 'Lee', '12-MAY-89', '22-JUL-17', 103, 403);
+
+INSERT INTO employee
+VALUES (106, 'Hakani',  'Ishan', '13-JUL-91', '11-FEB-18', 105, 403);
+
+INSERT INTO employee
+VALUES (108, 'Kim', 'Philip', '26-DEC-88', '08-FEB-20', 100, 404);
+
+INSERT INTO employee
+VALUES (109, 'Nunez', 'Isabel', '12-APR-89', '02-MAY-19', 107, 402);
+
+INSERT INTO employee
+VALUES (102, 'McMillan', 'Mandy', '08-JUL-69', '12-AUG-17', 109, 402);
+
+INSERT INTO employee
+VALUES (110, 'Sabin', 'Caroline', '08-MAY-79', '09-SEP-20', 100, 404);
+
+INSERT INTO employee
+VALUES (111, 'McNamara', 'Rachael', '06-OCT-97', '25-JUL-17', 104, 401); 
+
+INSERT INTO employee
+VALUES (112, 'Gandhi', 'Samira', '09-DEC-81', '04-APR-19', 101, 405); 
+
+INSERT INTO employee
+VALUES (113, 'Ahmed', 'Minhal', '22-JUN-93', '29-MAR-19', 106, 403); 
+
+INSERT INTO employee
+VALUES (114, 'Sun', 'Emily', '30-MAR-84', '21-AUG-21', 102, 402); 
+
+INSERT INTO employee
+VALUES (116, 'Wang', 'Anthony', '12-JAN-73', '01-DEC-20', 108, 404); 
+
+INSERT INTO employee
+VALUES (117, 'Martin', 'Julie', '18-NOV-83', '03-NOV-19', 111, 401); 
+
+INSERT INTO employee 
+VALUES (118, 'Franklin', 'Lauren', '13-AUG-92', '12-OCT-19', 101, 405); 
+
+INSERT INTO employee
+VALUES (119, 'Lu', 'Melissa', '17-SEP-98', '28-MAY-21', 107, 400); 
+
+INSERT INTO employee
+VALUES (115, 'Brady', 'Anna', '09-FEB-91', '14-JUL-20', 119, 400);
+
+INSERT INTO training 
+VALUES (300, 203, 103, 'College Course', '15-FEB-18', 'Received A-');
+
+INSERT INTO training
+VALUES (301, 205, 106, 'Certificate Program', '06-MAY-18', 'Udemy Course');
+
+INSERT INTO training 
+VALUES (302, 206, 100, 'Workshop', '13-JUL-20', 'LA Conference of Consulting 2020');
+
+INSERT INTO training 
+VALUES (303, 204, 119, 'College Course', '15-FEB-18', 'Received B+');
+
+INSERT INTO training 
+VALUES (304, 206, 108, 'Workshop', '10-NOV-19', 'Seattle Conference of Consulting 2019');
+
+INSERT INTO training 
+VALUES (305, 201, 107, 'Workshop','06-MAY-19', 'NY Conference of Consulting 2019');
+
+INSERT INTO training 
+VALUES (306, 200, 104, 'Certificate Program', '22-JUL-20', 'Coursera');
+
+INSERT INTO training 
+VALUES (307, 205, 101, 'Certificate Program', '14-MAY-20', 'Coursera');
+
+INSERT INTO training 
+VALUES (308, 207, 101,'Workshop', '14-MAY-20', 'NY Conference of Consulting 2020');
+
+INSERT INTO training 
+VALUES (309, 202, 102, 'Workshop','06-MAY-18', 'NY Conference of Consulting 2018');
+
+INSERT INTO training 
+VALUES (310, 204, 119, 'Certificate Program', '25-JUL-21', 'Coursera');
+
+INSERT INTO training 
+VALUES (311, 203, 103, 'Certificate Program','02-AUG-21', 'Coursera');
+
+INSERT INTO training 
+VALUES (312, 206, 108, 'Workshop', '12-NOV-21', 'Seattle Conference of Consulting 2021');
+
+INSERT INTO client
+VALUES (600, 'PNC Bank', '249 Fifth Avenue', 'Pittsburgh', 'Pennsylvania', 15222, 'Banking', 'www.pnc.com', 4127622000, 'Nook', 'Tom');
+
+INSERT INTO client 
+VALUES (601, 'PPG Industries', '1 PPG Place', 'Pittsburgh', 'Pennsylvania', 15272, 'Manufacturing', 'www.ppg.com', 4124343131, 'Reeves', 'Mabel');
+
+INSERT INTO client
+VALUES (602, 'Alleghany Institute', '305 Mt. Lebanon Boulevard', 'Pittsburgh', 'Pennsylvania', 15234, 'Non-Profit', 'www.alleghanyinstitute.org', 4124323300, 'Jefferson', 'Kate');
+
+INSERT INTO client
+VALUES (603, 'GNC', '300 Sixth Avenue', 'Pittsburgh', 'Pennsylvania', 15222, 'Retail', 'www.gnc.com', 4122884600, 'Wells', 'Roberta');
+
+INSERT INTO client
+VALUES (604, 'Kentucky Avenue School', '5701 Fifth Avenue', 'Pittsburgh', 'Pennsylvania', 15232, 'Non-Profit', 'www.kentuckyavenueschool.org', 7242605139, 'Fowler', 'Gene');
+
+INSERT INTO client 
+VALUES (605,'Institute of Politics', '4227 Fifth Avenue', 'Pittsburgh', 'Pennsylvania', 15260, 'Education', 'www.iop.pitt.edu', 4127929275, 'Howard', 'Enrique');
+
+INSERT INTO client
+VALUES (606, 'Mastech Digital', '111 Ryan Court', 'Pittsburgh', 'Pennsylvania', 15205, 'IT', 'www.mastechdigital.com', 4124292141, 'McGee', 'Miranda');
+
+INSERT INTO client
+VALUES (607, 'Duolingo', '5900 Penn Avenue', 'Pittsburgh', 'Pennsylvania', 15206, 'Technology', 'www.duolingo.com', 4125676602, 'Moss', 'Roland') ;
+
+INSERT INTO client 
+VALUES (608, 'Giant Eagle Inc.', '101 Kappas Drive', 'Pittsburgh', 'Pennsylvania', 15238, 'Retail', 'www.gianteagle.com', 4129636200, 'Ryan', 'Alonzo');
+
+INSERT INTO client 
+VALUES (609, 'Heinz', '1 PPG Place Suite 3100', 'Pittsburgh', 'Pennsylvania', 15222, 'Retail', 'www.heinz.com', 4124565700, 'Nelson', 'Thomas');
+
+INSERT INTO project
+VALUES (700, 'PROJECT 1', '25-SEP-21', 2808, 400, 602, 204);
+
+INSERT INTO project
+VALUES (701, 'PROJECT 2', '04-FEB-21', 9241, 405, 601, 206);
+
+INSERT INTO project
+VALUES (702, 'PROJECT 3', '17-DEC-20', 1023, 403, 606, 203);
+
+INSERT INTO project
+VALUES (703, 'PROJECT 4', '23-OCT-21', 1738, 405, 609, 205);
+
+INSERT INTO project
+VALUES (704, 'PROJECT 5', '11-MAY-20', 4762, 402, 604, 202);
+
+INSERT INTO project
+VALUES (705,'PROJECT 6', '18-JUN-19', 2936, 403, 604, 206);
+
+INSERT INTO project
+VALUES (706, 'PROJECT 7', '22-SEP-21', 5352, 402, 606, 207);
+
+INSERT INTO project
+VALUES (707, 'PROJECT 8', '29-OCT-21', 2019, 400, 607, 201);
+
+INSERT INTO project
+VALUES (708, 'PROJECT 9', '08-FEB-18', 6104, 401, 608, 203);
+
+INSERT INTO project
+VALUES (709, 'PROJECT 10', '03-MAR-21', 8042, 404, 605, 205);
+
+INSERT  INTO assignment
+VALUES (800, 700, 107,'27-SEP-21', '30-SEP-21', 16);
+
+INSERT INTO assignment
+VALUES (801, 700, 107, '1-NOV-21', '9-NOV-21', 36);
+
+INSERT INTO assignment
+VALUES (802, 700, 115, '25-SEP-21', '30-SEP-21', 12); 
+
+INSERT INTO assignment
+VALUES (803, 700, 115, '01-NOV-21', '09-NOV-21', 14); 
+
+INSERT INTO assignment
+VALUES (804, 700, 119, '02-NOV-21', '09-NOV-21', 15); 
+
+INSERT INTO assignment
+VALUES (805, 701, 112, '04-FEB-21', '13-FEB-21', 48); 
+
+INSERT INTO assignment
+VALUES (806, 701, 112, '01-APR-21', '02-APR-21', 7); 
+
+INSERT INTO assignment
+VALUES (807, 701, 101, '04-FEB-21', '28-FEB-21', 72);
+
+INSERT INTO assignment
+VALUES (808, 701, 101, '01-APR-21', '02-APR-21', 7);
+
+INSERT INTO assignment
+VALUES (809, 701, 101, '01-NOV-21', NULL, NULL);
+
+INSERT INTO assignment
+VALUES (810, 702, 103, '17-DEC-20', '22-DEC-20', 20); 
+
+INSERT INTO assignment
+VALUES (811, 702, 103, '04-JAN-21', '30-JAN-21', 121); 
+
+INSERT INTO assignment
+VALUES (812, 702, 103, '01-FEB-21', '28-FEB-21', 97); 
+
+INSERT INTO assignment
+VALUES (813, 702, 103, '01-MAR-21', '14-MAR-21', 56); 
+
+INSERT INTO assignment
+VALUES (814, 702, 105, '17-DEC-20', '22-DEC-20', 24); 
+
+INSERT INTO assignment
+VALUES (815, 702, 105, '04-JAN-21', '30-JAN-21', 122); 
+
+INSERT INTO assignment
+VALUES (816, 702, 105, '01-FEB-21', '28-FEB-21', 84); 
+
+INSERT INTO assignment
+VALUES (817, 702, 105, '01-MAR-21', '14-MAR-21', 52); 
+
+INSERT INTO assignment
+VALUES (818, 702, 106, '17-DEC-20', '22-DEC-20', 13); 
+
+INSERT INTO assignment
+VALUES (819, 702, 106, '04-JAN-21', '30-JAN-21', 43); 
+
+INSERT INTO assignment
+VALUES (820, 702, 106, '01-FEB-21', '28-FEB-21', 81); 
+
+INSERT INTO assignment
+VALUES (821, 702, 106, '01-MAR-21', '14-MAR-21', 23); 
+
+INSERT INTO assignment
+VALUES (822, 703, 112, '23-OCT-21', '31-OCT-21', 28);
+
+INSERT INTO assignment
+VALUES (823, 703, 112, '01-NOV-21', NULL, NULL);
+
+INSERT INTO assignment
+VALUES (824, 703, 118, '23-OCT-21', '31-OCT-21', 23);
+
+INSERT INTO assignment
+VALUES (825, 703, 118, '01-NOV-21', NULL, NULL);
+
+INSERT INTO assignment
+VALUES (826, 704, 102, '11-MAY-20', '31-MAY-20', 60);
+
+INSERT INTO assignment 
+VALUES (827, 704, 102, '01-APR-20', '29-APR-20', 72);
+
+INSERT INTO assignment
+VALUES (828, 704, 109, '11-MAY-20', '31-MAY-20', 34);
+
+INSERT INTO assignment 
+VALUES (829, 704, 109, '01-APR-20', '25-APR-20', 56);
+
+INSERT INTO assignment
+VALUES (830, 705, 113, '18-JUN-19', '30-JUN-19', 39);
+
+INSERT INTO assignment
+VALUES (831, 705, 113, '01-AUG-19', '08-AUG-19', 13);
+
+INSERT INTO assignment
+VALUES(832, 707, 107, '29-OCT-21', '31-OCT-21', 6);
+
+INSERT INTO assignment
+VALUES(833, 707, 107, '01-NOV-21', NULL, NULL);
+
+INSERT INTO assignment
+VALUES(834, 707, 104, '29-OCT-21', '31-OCT-21', 3);
+
+INSERT INTO assignment
+VALUES (835, 707, 104, '01-NOV-21', NULL, NULL);
+
+INSERT INTO assignment 
+VALUES (836, 703, 101, '23-OCT-21', '31-OCT-21', 11);
+
+INSERT INTO assignment
+VALUES (837, 703, 101, '01-NOV-21', NULL, NULL); 
+
+INSERT INTO assignment
+VALUES (838, 706, 104, '22-SEP-21', '30-SEP-21', 20); 
+
+INSERT INTO assignment
+VALUES (839, 706, 104, '01-OCT-21', '31-OCT-21', 76); 
+
+INSERT INTO assignment
+VALUES (840, 706, 104, '01-NOV-21', NULL, NULL); 
+
+INSERT INTO assignment
+VALUES (841, 709, 100, '03-MAR-21', '30-MAR-21', 68);
+
+INSERT INTO assignment
+VALUES (842, 709, 100, '01-AUG-21', '16-AUG-21', 79);
+
+INSERT INTO assignment
+VALUES (843, 709, 100, '01-OCT-21', '31-OCT-21', 133);
+
+INSERT INTO assignment
+VALUES (844, 709, 100, '01-NOV-21', '14-NOV-21', 35);
+
+INSERT INTO assignment
+VALUES (845, 709, 108, '03-MAR-21', '30-MAR-21', 57);
+
+INSERT INTO assignment
+VALUES (846, 709, 108, '01-AUG-21', '16-AUG-21', 82);
+
+INSERT INTO assignment
+VALUES (847, 709, 108, '01-OCT-21', '31-OCT-21', 110);
+
+INSERT INTO assignment
+VALUES (848, 709, 108, '01-NOV-21', '14-NOV-21', 26);
+
+INSERT INTO assignment
+VALUES (849, 709, 116, '01-NOV-21', '14-NOV-21', 19);
+
+
+
+
+
+Contents of Tables:
+
+
+SELECT * FROM skill;
+
+       CODE NAME                           CATEGORY
+---------- ------------------------------ --------------------
+       200 Excel                          Technology
+       201 Time Management                Interpersonal
+       202 Strategy                       Business
+       203 Data Collection                Technology
+       204 Hypotheses Trees               Technology
+       205 Research Methods               Technology
+       206 Resistance                     Interpersonal
+       207 Presentation                   Business
+
+8 rows selected.
+​​
+
+
+
+
+SELECT * FROM department;
+
+​​ DEPT_CODE NAME                 LOCATION                  PHONE MANAGER_ID
+---------- -------------------- -------------------- ---------- ----------
+       400 Administration       Pittsburgh, PA       4127942324        107
+       401 Finance              Pittsburgh, PA       4124200724        104
+       402 Sales                Pittsburgh, PA       4129024007        109
+       403 Technology           Pittsburgh, PA       4121248142        103
+       404 Customer Service     Pittsburgh, PA       4122468244        100
+       405 Operations           Pittsburgh, PA       4123974241        101
+
+6 rows selected.
+
+
+
+
+
+
+
+SELECT * FROM training;
+
+ TRAIN_NUM       CODE    EMP_NUM NAME                 DATE_ACQU COMMENTS
+---------- ---------- ---------- -------------------- --------- --------------------------------------------------
+       300        203        103 College Course       15-FEB-18 Received A-
+       301        205        106 Certificate Program  06-MAY-18 Udemy Course
+       302        206        100 Workshop             13-JUL-20 LA Conference of Consulting 2020
+       303        204        119 College Course       15-FEB-18 Received B+
+       304        206        108 Workshop             10-NOV-19 Seattle Conference of Consulting 2019
+       305        201        107 Workshop             06-MAY-19 NY Conference of Consulting 2019
+       306        200        104 Certificate Program  22-JUL-20 Coursera
+       307        205        101 Certificate Program  14-MAY-20 Coursera
+       308        207        101 Workshop             14-MAY-20 NY Conference of Consulting 2020
+       309        202        102 Workshop             06-MAY-18 NY Conference of Consulting 2018
+       310        204        119 Certificate Program  25-JUL-21 Coursera
+       311        203        103 Certificate Program  02-AUG-21 Coursera
+       312        206        108 Workshop             12-NOV-21 Seattle Conference of Consulting 2021
+
+13 rows selected.
+
+
+
+
+SELECT * FROM employee;
+
+   EMP_NUM LNAME                FNAME                DOB       HIRE_DATE   SUPER_ID  DEPT_CODE
+---------- -------------------- -------------------- --------- --------- ---------- ----------
+       107 Kand                 Nina                 30-NOV-71 30-JAN-17                   400
+       100 Patel                Shivani              26-JAN-98 30-JUN-20        107        404
+       101 Basquez              Joseph               24-MAR-96 27-JAN-20        107        405
+       103 Sung                 Esther               21-FEB-96 17-APR-20        107        403
+       104 Gadiraju             Gautham              01-NOV-84 12-AUG-17        107        401
+       105 Hagler               Lee                  12-MAY-89 22-JUL-17        103        403
+       106 Hakani               Ishan                13-JUL-91 11-FEB-18        105        403
+       108 Kim                  Philip               26-DEC-88 08-FEB-20        100        404
+       109 Nunez                Isabel               12-APR-89 02-MAY-19        107        402
+       102 McMillan             Mandy                08-JUL-69 12-AUG-17        109        402
+       110 Sabin                Caroline             08-MAY-79 09-SEP-20        100        404
+       111 McNamara             Rachael              06-OCT-97 25-JUL-17        104        401
+       112 Gandhi               Samira               09-DEC-81 04-APR-19        101        405
+       113 Ahmed                Minhal               22-JUN-93 29-MAR-19        106        403
+       114 Sun                  Emily                30-MAR-84 21-AUG-21        102        402
+       116 Wang                 Anthony              12-JAN-73 01-DEC-20        108        404
+       117 Martin               Julie                18-NOV-83 03-NOV-19        111        401
+       118 Franklin             Lauren               13-AUG-92 12-OCT-19        101        405
+       119 Lu                   Melissa              17-SEP-98 28-MAY-21        107        400
+       115 Brady                Anna                 09-FEB-91 14-JUL-20        119        400
+
+
+20 rows selected.
+
+SELECT * FROM client;
+ 
+CLIENT_ID NAME                    STREET                    CITY       STATE          ZIP_CODE INDUSTRY      WEB_ADDRESS                       PHONE CONTACT_LN CONTACT_FN
+---------- ----------------------- ------------------------- ---------- ------------ ---------- ------------- ---------------------------- ---------- ---------- ----------
+       600 PNC Bank                249 Fifth Avenue          Pittsburgh Pennsylvania      15222 Banking       www.pnc.com                  4127622000 Nook       Tom
+       601 PPG Industries          1 PPG Place               Pittsburgh Pennsylvania      15272 Manufacturing www.ppg.com                  4124343131 Reeves     Mabel
+       602 Alleghany Institute     305 Mt. Lebanon Boulevard Pittsburgh Pennsylvania      15234 Non-Profit    www.alleghanyinstitute.org   4124323300 Jefferson  Kate
+       603 GNC                     300 Sixth Avenue          Pittsburgh Pennsylvania      15222 Retail        www.gnc.com                  4122884600 Wells      Roberta
+       604 Kentucky Avenue School  5701 Fifth Avenue         Pittsburgh Pennsylvania      15232 Non-Profit    www.kentuckyavenueschool.org 7242605139 Fowler     Gene
+       605 Institute of Politics   4227 Fifth Avenue         Pittsburgh Pennsylvania      15260 Education     www.iop.pitt.edu             4127929275 Howard     Enrique
+       606 Mastech Digital         111 Ryan Court            Pittsburgh Pennsylvania      15205 IT         www.mastechdigital.com          4124292141 McGee      Miranda
+       607 Duolingo                5900 Penn Avenue          Pittsburgh Pennsylvania      15206 Technology    www.duolingo.com             4125676602 Moss       Roland
+       608 Giant Eagle Inc.        101 Kappas Drive          Pittsburgh Pennsylvania      15238 Retail        www.gianteagle.com           4129636200 Ryan       Alonzo
+       609 Heinz                   1 PPG Place Suite 3100    Pittsburgh Pennsylvania      15222 Retail        www.heinz.com                4124565700 Nelson     Thomas
+
+10 rows selected.
+
+
+
+
+
+SELECT * FROM project;
+
+PROJ_NUMBER NAME                    START_DAT TOTAL_COST  DEPT_CODE  CLIENT_ID       CODE
+----------- ----------------------- --------- ---------- ---------- ---------- ----------
+        700 PROJECT 1               25-SEP-21       2808        400        602        204
+        701 PROJECT 2               04-FEB-21       9241        405        601        206
+        702 PROJECT 3               17-DEC-20       1023        403        606        203
+        703 PROJECT 4               23-OCT-21       1738        405        609        205
+        704 PROJECT 5               11-MAY-20       4762        402        604        202
+        705 PROJECT 6               18-JUN-19       2936        403        604        206
+        706 PROJECT 7               22-SEP-21       5352        402        606        207
+        707 PROJECT 8               29-OCT-21       2019        400        607        201
+        708 PROJECT 9               08-FEB-18       6104        401        608        203
+        709 PROJECT 10              18-MAR-21       8042        404        605        205
+
+10 rows selected.
+
+
+
+SELECT * FROM assignment;
+
+ASSIGN_NUM PROJ_NUMBER    EMP_NUM DATE_ASSI DATE_ENDE HOURS_USED
+---------- ----------- ---------- --------- --------- ----------
+       800         700        107 27-SEP-21 30-SEP-21         16
+       801         700        107 01-NOV-21 09-NOV-21         36
+       802         700        115 25-SEP-21 30-SEP-21         12
+       803         700        115 01-NOV-21 09-NOV-21         14
+       804         700        119 02-NOV-21 09-NOV-21         15
+       805         701        112 04-FEB-21 13-FEB-21         48
+       806         701        112 01-APR-21 02-APR-21          7
+       807         701        101 04-FEB-21 28-FEB-21         72
+       808         701        101 01-APR-21 02-APR-21          7
+       809         701        101 01-NOV-21
+       810         702        103 17-DEC-20 22-DEC-20         20
+       811         702        103 04-JAN-21 30-JAN-21        121
+       812         702        103 01-FEB-21 28-FEB-21         97
+       813         702        103 01-MAR-21 14-MAR-21         56
+       814         702        105 17-DEC-20 22-DEC-20         24
+       815         702        105 04-JAN-21 30-JAN-21        122
+       816         702        105 01-FEB-21 28-FEB-21         84
+       817         702        105 01-MAR-21 14-MAR-21         52
+       818         702        106 17-DEC-20 22-DEC-20         13
+       819         702        106 04-JAN-21 30-JAN-21         43
+       820         702        106 01-FEB-21 28-FEB-21         81
+       821         702        106 01-MAR-21 14-MAR-21         23
+       822         703        112 23-OCT-21 31-OCT-21         28
+       823         703        112 01-NOV-21
+       824         703        118 23-OCT-21 31-OCT-21         23
+       825         703        118 01-NOV-21
+       826         704        102 11-MAY-20 31-MAY-20         60
+       827         704        102 01-APR-20 29-APR-20         72
+       828         704        109 11-MAY-20 31-MAY-20         34
+       829         704        109 01-APR-20 25-APR-20         56
+       830         705        113 18-JUN-19 30-JUN-19         39
+       831         705        113 01-AUG-19 08-AUG-19         13
+       832         707        107 29-OCT-21 31-OCT-21          6
+       833         707        107 01-NOV-21
+       834         707        104 29-OCT-21 31-OCT-21          3
+       835         707        104 01-NOV-21
+       836         703        101 23-OCT-21 31-OCT-21         11
+       837         703        101 01-NOV-21
+       838         706        104 22-SEP-21 30-SEP-21         20
+       839         706        104 01-OCT-21 31-OCT-21         76
+       840         706        104 01-NOV-21
+       841         709        100 03-MAR-21 30-MAR-21         68
+       842         709        100 01-AUG-21 16-AUG-21         79
+       843         709        100 01-OCT-21 31-OCT-21        133
+       844         709        100 01-NOV-21 14-NOV-21         35
+       845         709        108 03-MAR-21 30-MAR-21         57
+       846         709        108 01-AUG-21 16-AUG-21         82
+       847         709        108 01-OCT-21 31-OCT-21        110
+       848         709        108 01-NOV-21 14-NOV-21         26
+       849         709        116 01-NOV-21 14-NOV-21         19
+
+50 rows selected.
+
+
+
+
+
+Queries: 
+
+
+
+SQL> SELECT emp_num, fname || ' ' || lname AS Emp_Name,
+  2  s.name AS Skill,
+  3  count(train_num) AS Num_Train,
+  4  MIN(date_acquired) AS Earliest_Date,
+  5  TRUNC(MONTHS_BETWEEN(sysdate, MAX(date_acquired))) AS
+  6  Num_Mon_Last_Train
+  7  FROM employee JOIN training
+  8  USING (emp_num)
+  9  JOIN skill s USING(code)
+ 10  GROUP BY emp_num, fname || ' ' || lname, s.name;
+
+   EMP_NUM EMP_NAME                                  SKILL                           NUM_TRAIN EARLIEST_ NUM_MON_LAST_TRAIN                                                         
+---------- ----------------------------------------- ------------------------------ ---------- --------- ------------------                                                         
+       101 Joseph Basquez                            Presentation                            1 14-MAY-20                 18                                                         
+       101 Joseph Basquez                            Research Methods                        1 14-MAY-20                 18                                                         
+       102 Mandy McMillan                            Strategy                                1 06-MAY-18                 42                                                         
+       104 Gautham Gadiraju                          Excel                                   1 22-JUL-20                 16                                                         
+       106 Ishan Hakani                              Research Methods                        1 06-MAY-18                 42                                                         
+       107 Nina Kand                                 Time Management                         1 06-MAY-19                 30                                                         
+       119 Melissa Lu                                Hypotheses Trees                        2 15-FEB-18                  4                                                         
+       100 Shivani Patel                             Resistance                              1 13-JUL-20                 16                                                         
+       103 Esther Sung                               Data Collection                         2 15-FEB-18                  4                                                         
+       108 Philip Kim                                Resistance                              2 10-NOV-19                  0                                                         
+
+10 rows selected.
+
+
+
+
+
+
+
+SQL> SELECT LEVEL,
+  2  LPAD (' ', 3*(LEVEL-1)) || Emp_Num || ' ' || E.FName || ' ' || E.LName AS "Employee", D.Name
+  3  FROM Employee E
+  4  JOIN Department D USING(Dept_Code)
+  5  START WITH Emp_Num = 107
+  6  CONNECT BY PRIOR Emp_Num = Super_ID;
+
+     LEVEL Employee                                 NAME                                                                                                                            
+---------- ---------------------------------------- --------------------                                                                                                            
+         1 107 Nina Kand                            Administration                                                                                                                  
+         2    100 Shivani Patel                     Customer Service                                                                                                                
+         3       108 Philip Kim                     Customer Service                                                                                                                
+         4          116 Anthony Wang                Customer Service                                                                                                                
+         3       110 Caroline Sabin                 Customer Service                                                                                                                
+         2    101 Joseph Basquez                    Operations                                                                                                                      
+         3       112 Samira Gandhi                  Operations                                                                                                                      
+         3       118 Lauren Franklin                Operations                                                                                                                      
+         2    103 Esther Sung                       Technology                                                                                                                      
+         3       105 Lee Hagler                     Technology                                                                                                                      
+         4          106 Ishan Hakani                Technology                                                                                                                      
+         5             113 Minhal Ahmed             Technology                                                                                                                      
+         2    104 Gautham Gadiraju                  Finance                                                                                                                         
+         3       111 Rachael McNamara               Finance                                                                                                                         
+         4          117 Julie Martin                Finance                                                                                                                         
+         2    109 Isabel Nunez                      Sales                                                                                                                           
+         3       102 Mandy McMillan                 Sales                                                                                                                           
+         4          114 Emily Sun                   Sales                                                                                                                           
+         2    119 Melissa Lu                        Administration                                                                                                                  
+         3       115 Anna Brady                     Administration                                                                                                                  
+
+20 rows selected.
+
+ 
+SQL> SELECT Name, Start_Date, COALESCE(TO_CHAR(TO_DATE(Month,'MM'), 'MONTH'), 'TOTAL') AS Month,
+  2  SUM(Hours) AS "HOURS", Count(Emps) AS "EMPLOYEES"
+  3  FROM
+  4  (SELECT Proj_Number, EXTRACT(month FROM Date_Assigned) AS month,
+  5  SUM(Hours_Used) AS Hours, Count(Emp_Num) AS Emps, Date_Ended
+  6  FROM assignment WHERE proj_number IN
+  7  (SELECT Proj_Number
+  8  FROM assignment
+  9  WHERE Date_Ended IS NULL)
+ 10  GROUP BY Proj_Number, EXTRACT(month FROM Date_Assigned), Date_Ended)
+ 11  JOIN project USING(Proj_Number)
+ 12  WHERE Date_Ended IS NOT NULL
+ 13  GROUP BY ROLLUP(Month), Name, Start_Date
+ 14  ORDER BY Name, Month;
+
+NAME                 START_DATE   MONTH                                     HOURS  EMPLOYEES                                                                                        
+-------------------- ------------ ------------------------------------ ---------- ----------                                                                                        
+PROJECT 2            04-FEB-21    APRIL                                        14          1                                                                                        
+PROJECT 2            04-FEB-21    FEBRUARY                                    120          2                                                                                        
+PROJECT 2            04-FEB-21    TOTAL                                       134          3                                                                                        
+PROJECT 4            23-OCT-21    OCTOBER                                      62          1                                                                                        
+PROJECT 4            23-OCT-21    TOTAL                                        62          1                                                                                        
+PROJECT 7            22-SEP-21    OCTOBER                                      76          1                                                                                        
+PROJECT 7            22-SEP-21    SEPTEMBER                                    20          1                                                                                        
+PROJECT 7            22-SEP-21    TOTAL                                        96          2                                                                                        
+PROJECT 8            29-OCT-21    OCTOBER                                       9          1                                                                                        
+PROJECT 8            29-OCT-21    TOTAL                                         9          1                                                                                        
+
+10 rows selected.
+
+
+
+
+SQL> ALTER TABLE employee
+  2  ADD Bonus_Amt VARCHAR(10);
+
+Table altered.
+
+SQL> 
+SQL> UPDATE employee
+  2  SET Bonus_amt =
+  3  CASE
+  4  WHEN Emp_Num IN (SELECT EMP_NUM
+  5  FROM project P
+  6  JOIN assignment A USING(Proj_Number)
+  7  WHERE TO_CHAR(Start_Date, 'Q') = 1
+  8  HAVING SUM(Hours_Used) > 150
+  9  GROUP BY Emp_Num) THEN TO_CHAR(200, '$990.99')
+ 10  ELSE TO_CHAR(0, '$990.99')
+ 11  END;
+
+20 rows updated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SQL> SELECT * FROM employee;
+
+     EMP_NUM LNAME                FNAME                DOB       HIRE_DATE   SUPER_ID  DEPT_CODE BONUS_AMT
+---------- -------------------- -------------------- --------- --------- ---------- ---------- ----------
+       107 Kand                 Nina                 30-NOV-71 30-JAN-17                   400    $0.00
+       100 Patel                Shivani              26-JAN-98 30-JUN-20        107        404  $200.00
+       101 Basquez              Joseph               24-MAR-96 27-JAN-20        107        405    $0.00
+       103 Sung                 Esther               21-FEB-96 17-APR-20        107        403    $0.00
+       104 Gadiraju             Gautham              01-NOV-84 12-AUG-17        107        401    $0.00
+       105 Hagler               Lee                  12-MAY-89 22-JUL-17        103        403    $0.00
+       106 Hakani               Ishan                13-JUL-91 11-FEB-18        105        403    $0.00
+       108 Kim                  Philip               26-DEC-88 08-FEB-20        100        404  $200.00
+       109 Nunez                Isabel               12-APR-89 02-MAY-19        107        402    $0.00
+       102 McMillan             Mandy                08-JUL-69 12-AUG-17        109        402    $0.00
+       110 Sabin                Caroline             08-MAY-79 09-SEP-20        100        404    $0.00
+       111 McNamara             Rachael              06-OCT-97 25-JUL-17        104        401    $0.00
+       112 Gandhi               Samira               09-DEC-81 04-APR-19        101        405    $0.00
+       113 Ahmed                Minhal               22-JUN-93 29-MAR-19        106        403    $0.00
+       114 Sun                  Emily                30-MAR-84 21-AUG-21        102        402    $0.00
+       116 Wang                 Anthony              12-JAN-73 01-DEC-20        108        404    $0.00
+       117 Martin               Julie                18-NOV-83 03-NOV-19        111        401    $0.00
+       118 Franklin             Lauren               13-AUG-92 12-OCT-19        101        405    $0.00
+       119 Lu                   Melissa              17-SEP-98 28-MAY-21        107        400    $0.00
+       115 Brady                Anna                 09-FEB-91 14-JUL-20        119        400    $0.00
+
+20 rows selected.
+
+
+
+
+
+
+
+
+
+
+SQL> SELECT E.Hire_Date, Emp_Num || ' ' || E.FName || ' ' || E.LName AS Employee, Name AS "TRAINING NAME", ABS(Hire_Date - Date_Acquired) AS "DAYS PAST"
+  2  FROM employee E
+  3  JOIN training T USING(Emp_Num)
+  4  WHERE TO_CHAR(E.Hire_Date, 'Q') = 2
+  5  AND EXTRACT(YEAR FROM E.Hire_Date) = 2021;
+
+HIRE_DATE EMPLOYEE                                 TRAINING NAME         DAYS PAST                                                                                                  
+--------- ---------------------------------------- -------------------- ----------                                                                                                  
+28-MAY-21 119 Melissa Lu                           College Course             1198                                                                                                  
+28-MAY-21 119 Melissa Lu                           Certificate Program          58
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SQL> SELECT DISTINCT proj_number ||' '|| name AS Project,
+  2  start_date,
+  3  CASE
+  4  WHEN total_cost IS NULL THEN 'ongoing'
+  5  ELSE 'completed'
+  6  END   AS status
+  7  FROM
+  8  (SELECT proj_number,name,emp_num,start_date,
+  9  date_assigned, total_cost,date_ended,rank,
+ 10  CASE
+ 11  WHEN Abs(Months_between(date_ended, lead)) > 1 THEN 1
+ 12  ELSE 0
+ 13  END AS discontinued
+ 14  FROM
+ 15  (SELECT Rank()
+ 16   over (
+ 17  PARTITION BY proj_number
+ 18  ORDER BY date_ended)
+ 19  AS rank,proj_number,name,emp_num,start_date,date_assigned,total_cost,date_ended,
+ 20  LEAD(date_assigned)
+ 21  OVER
+ 22  (ORDER BY date_assigned) AS lead
+ 23  FROM   project
+ 24  JOIN assignment
+ 25  USING (proj_number)
+ 26  GROUP  BY proj_number,name,emp_num,start_date,date_assigned,total_cost, date_ended
+ 27  ORDER  BY proj_number,date_ended))
+ 28  WHERE  discontinued = 1;
+
+
+
+PROJECT                                                       START_DATE   STATUS                                                                                                   
+------------------------------------------------------------- ------------ ---------                                                                                                
+705 PROJECT 6                                                 18-JUN-19    completed                                                                                                
+701 PROJECT 2                                                 04-FEB-21    completed                                                                                                
+709 PROJECT 10                                                03-MAR-21    completed                                                                                                
+704 PROJECT 5                                                 11-MAY-20    completed     
+
+
+
+
+
+
+
+
+
+
+SQL> SELECT TO_CHAR(P.Start_Date, 'Q'),
+  2  NVL(COUNT(DISTINCT Proj_Number),0) as Num_Projects,
+  3  NVL(COUNT(DISTINCT Emp_Num),0) as Num_Employees,
+  4  ROUND(AVG(A.Hours_Used),0) as Avg_Hours
+  5  FROM Project P
+  6  JOIN Assignment A
+  7  USING (Proj_Number)
+  8  JOIN Employee E USING (Emp_Num)
+  9  WHERE EXTRACT(YEAR FROM P.Start_Date) = 2021
+ 10  GROUP BY TO_CHAR(P.Start_Date, 'Q');
+
+T NUM_PROJECTS NUM_EMPLOYEES  AVG_HOURS                                                                                                                                             
+- ------------ ------------- ----------                                                                                                                                             
+1            2             5         57                                                                                                                                             
+3            2             4         27                                                                                                                                             
+4            2             5         14
+
+
+
+
+
+
+
+
+SQL> SELECT m.Dept_Code||':'||m.Dept_Name AS Dept,m.Code||':'||m.Skill_Name AS Skill,
+  2  NVL(n.TRAIN_TIMES,0) AS TRAIN_TIMES,
+  3  DENSE_RANK()
+  4  OVER(PARTITION BY m.DEPT_Code
+  5  ORDER BY NVL(n.TRAIN_TIMES,0) DESC) AS RANK
+  6  FROM
+  7  (SELECT d.Dept_Code,d.Name AS Dept_Name,a.Code,a.Skill_Name
+  8  FROM DEPARTMENT d
+  9  CROSS JOIN
+ 10  (SELECT s.CODE,s.Name AS Skill_Name
+ 11  FROM SKILL s)a)m
+ 12  LEFT JOIN
+ 13  (SELECT d.Dept_Code,d.Name,t.Code,
+ 14  COUNT(t.Emp_Num) AS TRAIN_TIMES
+ 15  FROM DEPARTMENT d
+ 16  LEFT JOIN EMPLOYEE e ON d.Dept_Code = e.Dept_Code
+ 17  LEFT JOIN TRAINING t ON e.Emp_Num = t.Emp_Num
+ 18  GROUP BY d.Dept_Code,d.Name,t.Code)n
+ 19  ON m.Dept_Code = n.Dept_Code
+ 20  AND m.Code = n.Code
+ 21  ORDER BY m.Dept_Code;
+
+
+
+SQL> COLUMN Dept FORMAT A25;
+SQL> COLUMN Dept FORMAT A25;
+SQL> /
+
+DEPT                      SKILL                     TRAIN_TIMES       RANK
+------------------------- ------------------------- ----------- ----------
+400:Administration        204:Hypotheses Trees                2          1
+400:Administration        201:Time Management                 1          2
+400:Administration        203:Data Collection                 0          3
+400:Administration        202:Strategy                        0          3
+400:Administration        200:Excel                           0          3
+400:Administration        207:Presentation                    0          3
+400:Administration        205:Research Methods                0          3
+400:Administration        206:Resistance                      0          3
+401:Finance               200:Excel                           1          1
+401:Finance               206:Resistance                      0          2
+401:Finance               202:Strategy                        0          2
+401:Finance               205:Research Methods                0          2
+401:Finance               203:Data Collection                 0          2
+401:Finance               207:Presentation                    0          2
+401:Finance               204:Hypotheses Trees                0          2
+401:Finance               201:Time Management                 0          2
+402:Sales                 202:Strategy                        1          1
+402:Sales                 204:Hypotheses Trees                0          2
+402:Sales                 201:Time Management                 0          2
+402:Sales                 200:Excel                           0          2
+402:Sales                 205:Research Methods                0          2
+402:Sales                 207:Presentation                    0          2
+402:Sales                 203:Data Collection                 0          2
+402:Sales                 206:Resistance                      0          2
+403:Technology            203:Data Collection                 2          1
+403:Technology            205:Research Methods                1          2
+403:Technology            204:Hypotheses Trees                0          3
+403:Technology            202:Strategy                        0          3
+403:Technology            201:Time Management                 0          3
+403:Technology            207:Presentation                    0          3
+403:Technology            206:Resistance                      0          3
+403:Technology            200:Excel                           0          3
+404:Customer Service      206:Resistance                      3          1
+404:Customer Service      203:Data Collection                 0          2
+404:Customer Service      204:Hypotheses Trees                0          2
+404:Customer Service      202:Strategy                        0          2
+404:Customer Service      205:Research Methods                0          2
+404:Customer Service      200:Excel                           0          2
+404:Customer Service      207:Presentation                    0          2
+404:Customer Service      201:Time Management                 0          2
+405:Operations            205:Research Methods                1          1
+405:Operations            207:Presentation                    1          1
+405:Operations            206:Resistance                      0          2
+405:Operations            203:Data Collection                 0          2
+405:Operations            202:Strategy                        0          2
+405:Operations            201:Time Management                 0          2
+405:Operations            200:Excel                           0          2
+405:Operations            204:Hypotheses Trees                0          2
+
+48 rows selected.
+
+
+
+
+SQL> SELECT proj_number || ' ' || P.name AS Project,
+  2  emp_count AS "Employee Count"
+  3  FROM (SELECT proj_number,emp_count,
+  4  assignments, assigned, ended,
+  5  Rank() OVER (PARTITION BY proj_number
+  6  ORDER BY A.assign_num) AS rank
+  7  FROM   assignment A
+  8  JOIN (SELECT proj_number,
+  9  Count(DISTINCT emp_num) AS emp_count,
+ 10  Count(assign_num) as assignments,
+ 11  Min(date_assigned) as assigned,
+ 12  Max(date_ended) as ended
+ 13  FROM   assignment
+ 14  GROUP  BY proj_number
+ 15  HAVING Count(assign_num) >= 5) E USING (proj_number))
+ 16  JOIN project P USING (proj_number)
+ 17  WHERE  rank <= 3
+ 18  GROUP  BY proj_number,
+ 19  P.name,
+ 20  emp_count
+ 21  HAVING Max(ended) - Min(assigned) >= 60;
+
+SQL> COLUMN Project FORMAT A20;
+SQL> /
+
+PROJECT              Employee Count
+-------------------- --------------
+709 PROJECT 10                    3
+702 PROJECT 3                     3
+
+
+
+
+
+SQL> SELECT * FROM (SELECT LEVEL, E.hire_date as HireDate,
+  2  Emp_Num || ' ' || E.FName || ' ' || E.LName AS Employee, D.Name
+  3  as Department
+  4  FROM Employee E
+  5  JOIN Department D USING(Dept_Code)
+  6  where LEVEL <= 2
+  7  START WITH Emp_Num = 107
+  8  CONNECT BY PRIOR Emp_Num = Super_ID)
+  9  WHERE ROWNUM <= 4
+ 10  ORDER BY HireDate;
+
+     LEVEL HIREDATE  EMPLOYEE                                 DEPARTMENT                                                                                                            
+---------- --------- ---------------------------------------- --------------------                                                                                                  
+         1 30-JAN-17 107 Nina Kand                            Administration                                                                                                        
+         2 27-JAN-20 101 Joseph Basquez                       Operations                                                                                                            
+         2 17-APR-20 103 Esther Sung                          Technology                                                                                                            
+         2 30-JUN-20 100 Shivani Patel                        Customer Service   
+
+
+
+
+
+
+
+
+
+
+SQL> SELECT DECODE(category, NULL, 'Not Available',
+  2  'edu', 'educational institution',
+  3  'org', 'not-for-profit organization',
+  4  'com', 'for-profit company',
+  5  'gov', 'government agency',
+  6  'Other') AS Categories,
+  7  Count(client_id)
+  8  AS "Client Count",
+  9  SUM(proj_count)
+ 10  AS "Project Count"
+ 11  FROM
+ 12  (SELECT
+ 13  Substr(web_address, -3)
+ 14  AS category,
+ 15  client_id,
+ 16  Count(proj_number)      AS proj_count
+ 17  FROM   client C
+ 18  LEFT JOIN project P
+ 19  USING (client_id)
+ 20  GROUP  BY client_id,
+ 21  web_address)
+ 22  GROUP  BY category;
+
+CATEGORIES                  Client Count Project Count                                                                                                                              
+--------------------------- ------------ -------------                                                                                                                              
+not-for-profit organization            2             3                                                                                                                              
+educational institution                1             1                                                                                                                              
+for-profit company                     7             6 
+
+
+
+
+
+
+SQL> SELECT Emp_Num || ' ' || E.FName || ' ' || E.LName AS "Employee",
+  2  MAX(A.Date_Assigned) AS "LAST PROJECT", P.Name, D.Name
+  3  FROM employee E
+  4  JOIN department D USING(Dept_Code)
+  5  JOIN assignment A USING(Emp_Num)
+  6  JOIN project P USING(Proj_Number)
+  7  WHERE Emp_Num NOT IN (SELECT Emp_Num
+  8  FROM assignment
+  9  WHERE Date_Assigned > '31-JUL-21')
+ 10  GROUP BY Emp_Num, D.Name, P.Name, E.LName, E.FName
+ 11  ORDER BY D.Name, E.LName;
+
+Employee                                 LAST PROJ NAME                 NAME                                                                                                        
+---------------------------------------- --------- -------------------- --------------------                                                                                        
+102 Mandy McMillan                       11-MAY-20 PROJECT 5            Sales                                                                                                       
+109 Isabel Nunez                         11-MAY-20 PROJECT 5            Sales                                                                                                       
+113 Minhal Ahmed                         01-AUG-19 PROJECT 6            Technology                                                                                                  
+105 Lee Hagler                           01-MAR-21 PROJECT 3            Technology                                                                                                  
+106 Ishan Hakani                         01-MAR-21 PROJECT 3            Technology                                                                                                  
+103 Esther Sung                          01-MAR-21 PROJECT 3            Technology                                                                                                  
+
+6 rows selected.
+
+
+
+
+
+
+
+
+
+
+
+ SQL> SELECT *
+  2  FROM
+  3  (SELECT Category, COUNT(Proj_Number) AS "Projects"
+  4  FROM project
+  5  JOIN skill USING(Code)
+  6  GROUP BY Category)
+  7  JOIN
+  8  (SELECT Category, COUNT(Train_Num) AS "Trainings"
+  9  FROM training
+ 10  JOIN skill USING(code)
+ 11  GROUP BY Category)
+ 12  USING(category)
+ 13  UNION ALL
+ 14  SELECT 'Grand Total:', SUM(projects), SUM(trainings)
+ 15  FROM
+ 16  (SELECT Category, COUNT(Proj_Number) AS Projects
+ 17  FROM project
+ 18  JOIN skill USING(code)
+ 19  GROUP BY category)
+ 20  JOIN
+ 21  (SELECT Category, COUNT(Train_Num) AS Trainings
+ 22  FROM training
+ 23  JOIN skill USING(Code)
+ 24  GROUP BY Category)
+ 25  USING(Category);
+
+CATEGORY               Projects  Trainings                                                                                                                                          
+-------------------- ---------- ----------                                                                                                                                          
+Interpersonal                 3          4                                                                                                                                          
+Technology                    5          7                                                                                                                                          
+Business                      2          2                                                                                                                                          
+Grand Total:                 10         13 
+
+
+
+
+
+
+SQL> SELECT a.table_name, a.column_name, a.constraint_name, a.constraint_type, b.search_condition, c.table_name AS "TABLE_REFERENCED", c.column_name AS "COLUMN_REFERENCED"
+  2  FROM
+  3  (SELECT t.table_name, t.column_name, column_id, u.constraint_name,
+  4  SUBSTR(u.constraint_name,
+  5  LENGTH(u.constraint_name)-1,
+  6  LENGTH(u.constraint_name)) AS "CONSTRAINT_TYPE"
+  7  FROM user_tab_columns t
+  8  JOIN user_constraints c
+  9  ON t.table_name=c.table_name
+ 10  LEFT OUTER JOIN user_cons_columns u
+ 11  ON t.column_name=u.column_name
+ 12  GROUP BY t.table_name, t.column_name, column_id, u.constraint_name
+ 13  ORDER BY t.table_name) a
+ 14  LEFT OUTER JOIN
+ 15  (SELECT constraint_name, search_condition
+ 16  FROM user_constraints
+ 17  WHERE constraint_type='C') b
+ 18  ON a.constraint_name=b.constraint_name
+ 19  LEFT OUTER JOIN
+ 20  (SELECT c.constraint_name, c.r_constraint_name, u.table_name, u.column_name
+ 21  FROM user_cons_columns u, user_constraints c
+ 22  WHERE c. constraint_type= 'R'
+ 23  AND u.constraint_name=c.r_constraint_name ) c
+ 24  ON a.constraint_name=c.constraint_name
+ 25  ORDER BY a.table_name, a.column_id;
+
+
+
+
+
+
+TABLE_NAME COLUMN_NAME     CONSTRAINT_NAME           CONSTRAINT SEARCH_CONDITION          TABLE_REFE COLUMN_REFER
+---------- --------------- ------------------------- ---------- ------------------------- ---------- ------------
+ASSIGNMENT ASSIGN_NUM      SYS_C008299               99
+ASSIGNMENT PROJ_NUMBER     SYS_C008293               93
+ASSIGNMENT PROJ_NUMBER     ASSIGNMENT_PROJ_NUM_FK    FK                                   PROJECT    PROJ_NUMBER
+ASSIGNMENT EMP_NUM         SYS_C008281               81
+ASSIGNMENT EMP_NUM         ASSIGNMENT_EMP_NUM_FK     FK                                   EMPLOYEE   EMP_NUM
+ASSIGNMENT EMP_NUM         EMPLOYEE_EMP_NUM_FK       FK                                   EMPLOYEE   EMP_NUM
+ASSIGNMENT DATE_ASSIGNED   DATE_ENDED_CC             CC         Date_ended > Date_assigne
+                                                                d
+
+ASSIGNMENT DATE_ENDED      DATE_ENDED_CC             CC         Date_ended > Date_assigne
+                                                                d
+
+ASSIGNMENT HOURS_USED      HOURS_USED_CC             CC         Hours_Used >0
+AUTHOR     AUTHORID        BOOKAUTHOR_PK             PK
+AUTHOR     AUTHORID        SYS_C007160               60
+AUTHOR     LNAME
+AUTHOR     FNAME
+BOOKAUTHOR ISBN            BOOKAUTHOR_PK             PK
+BOOKAUTHOR ISBN            SYS_C007161               61
+BOOKAUTHOR AUTHORID        BOOKAUTHOR_PK             PK
+BOOKAUTHOR AUTHORID        SYS_C007160               60
+BOOKS      ISBN            BOOKAUTHOR_PK             PK
+BOOKS      ISBN            SYS_C007161               61
+BOOKS      TITLE
+BOOKS      PUBDATE
+BOOKS      PUBID           SYS_C007159               59
+BOOKS      COST
+BOOKS      RETAIL
+BOOKS      DISCOUNT
+BOOKS      CATEGORY
+CLIENT     CLIENT_ID       PROJECT_CLIENT_ID_FK      FK                                   CLIENT     CLIENT_ID
+CLIENT     CLIENT_ID       SYS_C008290               90
+CLIENT     NAME            PROJECT_NAME_CC           CC         Name NOT LIKE '%[^A-Z]%'
+CLIENT     STREET
+CLIENT     CITY
+CLIENT     STATE
+CLIENT     ZIP_CODE        CLIENT_ZIP_CC             CC         Zip_Code>9999
+CLIENT     INDUSTRY
+CLIENT     WEB_ADDRESS
+CLIENT     PHONE           CLIENT_PHONE_CC           CC         Phone>999999999
+CLIENT     PHONE           DEPARTMENT_PHONE_CC       CC         Phone>999999999
+CLIENT     CONTACT_LNAME
+CLIENT     CONTACT_FNAME
+CUSTOMERS  CUSTOMER#       SYS_C007157               57
+CUSTOMERS  LASTNAME
+CUSTOMERS  FIRSTNAME
+CUSTOMERS  ADDRESS
+CUSTOMERS  CITY
+CUSTOMERS  STATE
+CUSTOMERS  ZIP
+CUSTOMERS  REFERRED
+CUSTOMERS  REGION
+CUSTOMERS  EMAIL
+DEPARTMENT DEPT_CODE       EMPLOYEE_DEPT_CODE_FK     FK                                   DEPARTMENT DEPT_CODE
+DEPARTMENT DEPT_CODE       SYS_C008279               79
+DEPARTMENT DEPT_CODE       PROJECT_DEPT_CODE_FK      FK                                   DEPARTMENT DEPT_CODE
+DEPARTMENT NAME            PROJECT_NAME_CC           CC         Name NOT LIKE '%[^A-Z]%'
+DEPARTMENT LOCATION
+DEPARTMENT PHONE           DEPARTMENT_PHONE_CC       CC         Phone>999999999
+DEPARTMENT PHONE           CLIENT_PHONE_CC           CC         Phone>999999999
+DEPARTMENT MANAGER_ID
+EMPLOYEE   EMP_NUM         ASSIGNMENT_EMP_NUM_FK     FK                                   EMPLOYEE   EMP_NUM
+EMPLOYEE   EMP_NUM         SYS_C008281               81
+EMPLOYEE   EMP_NUM         EMPLOYEE_EMP_NUM_FK       FK                                   EMPLOYEE   EMP_NUM
+EMPLOYEE   LNAME
+EMPLOYEE   FNAME
+EMPLOYEE   DOB             EMPLOYEE_DOB_CC           CC         DOB<Hire_Date
+EMPLOYEE   HIRE_DATE       EMPLOYEE_DOB_CC           CC         DOB<Hire_Date
+EMPLOYEE   SUPER_ID        EMPLOYEE_SUPER_ID_FK      FK                                   EMPLOYEE   EMP_NUM
+EMPLOYEE   DEPT_CODE       PROJECT_DEPT_CODE_FK      FK                                   DEPARTMENT DEPT_CODE
+EMPLOYEE   DEPT_CODE       SYS_C008279               79
+EMPLOYEE   DEPT_CODE       EMPLOYEE_DEPT_CODE_FK     FK                                   DEPARTMENT DEPT_CODE
+EMPLOYEE   BONUS_AMT
+ORDERS     ORDER#          SYS_C007158               58
+ORDERS     CUSTOMER#       SYS_C007157               57
+ORDERS     ORDERDATE
+ORDERS     SHIPDATE
+ORDERS     SHIPSTREET
+ORDERS     SHIPCITY
+ORDERS     SHIPSTATE
+ORDERS     SHIPZIP
+ORDERS     SHIPCOST
+PROJECT    PROJ_NUMBER     ASSIGNMENT_PROJ_NUM_FK    FK                                   PROJECT    PROJ_NUMBER
+PROJECT    PROJ_NUMBER     SYS_C008293               93
+PROJECT    NAME            PROJECT_NAME_CC           CC         Name NOT LIKE '%[^A-Z]%'
+PROJECT    START_DATE
+PROJECT    TOTAL_COST      PROJECT_TOL_COST_CC       CC         Total_Cost>0
+PROJECT    DEPT_CODE       EMPLOYEE_DEPT_CODE_FK     FK                                   DEPARTMENT DEPT_CODE
+PROJECT    DEPT_CODE       SYS_C008279               79
+PROJECT    DEPT_CODE       PROJECT_DEPT_CODE_FK      FK                                   DEPARTMENT DEPT_CODE
+PROJECT    CLIENT_ID       PROJECT_CLIENT_ID_FK      FK                                   CLIENT     CLIENT_ID
+PROJECT    CLIENT_ID       SYS_C008290               90
+PROJECT    CODE            TRAINING_CODE_FK          FK                                   SKILL      CODE
+PROJECT    CODE            CODE_PK                   PK
+PROJECT    CODE            PROJECT_CODE_FK           FK                                   SKILL      CODE
+PUBLISHER  PUBID           SYS_C007159               59
+PUBLISHER  NAME            PROJECT_NAME_CC           CC         Name NOT LIKE '%[^A-Z]%'
+PUBLISHER  CONTACT
+PUBLISHER  PHONE           DEPARTMENT_PHONE_CC       CC         Phone>999999999
+PUBLISHER  PHONE           CLIENT_PHONE_CC           CC         Phone>999999999
+SKILL      CODE            CODE_PK                   PK
+SKILL      CODE            PROJECT_CODE_FK           FK                                   SKILL      CODE
+SKILL      CODE            TRAINING_CODE_FK          FK                                   SKILL      CODE
+SKILL      NAME            PROJECT_NAME_CC           CC         Name NOT LIKE '%[^A-Z]%'
+SKILL      CATEGORY
+STORE_REPS REP_ID          STORE_REPS_REP_ID         ID
+STORE_REPS LAST            STORE_REPS_LAST_NN        NN         "LAST" IS NOT NULL
+STORE_REPS FIRST           STORE_REPS_FIRST_NN       NN         "FIRST" IS NOT NULL
+STORE_REPS COMM            COMM_VALUE_CHECK          CK         comm IN ('Y','N')
+STORE_REPS BASE_SALARY     STORE_REPS_BASE_SALARY_VA UE         base_salary>0
+                           LUE
+
+TRAINING   TRAIN_NUM       SYS_C008285               85
+TRAINING   CODE            TRAINING_CODE_FK          FK                                   SKILL      CODE
+TRAINING   CODE            PROJECT_CODE_FK           FK                                   SKILL      CODE
+TRAINING   CODE            CODE_PK                   PK
+TRAINING   EMP_NUM         EMPLOYEE_EMP_NUM_FK       FK                                   EMPLOYEE   EMP_NUM
+TRAINING   EMP_NUM         ASSIGNMENT_EMP_NUM_FK     FK                                   EMPLOYEE   EMP_NUM
+TRAINING   EMP_NUM         SYS_C008281               81
+TRAINING   NAME            PROJECT_NAME_CC           CC         Name NOT LIKE '%[^A-Z]%'
+TRAINING   DATE_ACQUIRED   TRAINING_DT_AQ_CC         CC
+                                                                Date_Acquired>TO_DATE('19
+                                                                89-12-09','YYYY-MM-DD')
+
+TRAINING   COMMENTS
+
+116 rows selected.
+
+
+
+
+
